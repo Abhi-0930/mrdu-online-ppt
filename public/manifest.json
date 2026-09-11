@@ -1,0 +1,18 @@
+{
+  "name": "Classroom Presentation Manager",
+  "short_name": "Presentation PWA",
+  "description": "Offline Progressive Web App for trainers & faculty to manage, pick, evaluate, and track student presentation batches.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#2563EB",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

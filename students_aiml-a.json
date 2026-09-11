@@ -1,0 +1,263 @@
+[
+  {
+    "batch": 1,
+    "pptTitle": "Drone Technology",
+    "members": [
+      { "name": "Nikhil", "rollNo": 63 },
+      { "name": "Sai Rakshith", "rollNo": 61 },
+      { "name": "Chanakya", "rollNo": 18 }
+    ]
+  },
+  {
+    "batch": 2,
+    "pptTitle": "AI IN EVERYDAY LIFE",
+    "members": [
+      { "name": "Pathuri Ashwanth", "rollNo": 86 },
+      { "name": "Arelli Santosh", "rollNo": 58 },
+      { "name": "Emmadi Ganesh", "rollNo": 65 }
+    ]
+  },
+  {
+    "batch": 3,
+    "pptTitle": "Generative AI",
+    "members": [
+      { "name": "Yogitha", "rollNo": 40 },
+      { "name": "Bharath", "rollNo": 70 },
+      { "name": "Priyanka", "rollNo": 52 }
+    ]
+  },
+  {
+    "batch": 4,
+    "pptTitle": "AI IN SMART HOMES",
+    "members": [
+      { "name": "Vaishnavi", "rollNo": 11 },
+      { "name": "Sahasra Sindhu", "rollNo": 5 },
+      { "name": "Chaithra Reddy", "rollNo": 4 }
+    ]
+  },
+  {
+    "batch": 5,
+    "pptTitle": "VIRTUAL REALITY",
+    "members": [
+      { "name": "Rushwanth Reddy", "rollNo": 39 },
+      { "name": "Sanju Kagh", "rollNo": 50 },
+      { "name": "Priya Gouda", "rollNo": 46 }
+    ]
+  },
+  {
+    "batch": 6,
+    "pptTitle": "AI In Sports Analytics",
+    "members": [
+      { "name": "Ch. Vamshi", "rollNo": 21 },
+      { "name": "Omaram", "rollNo": 84 },
+      { "name": "Hasini", "rollNo": 51 }
+    ]
+  },
+  {
+    "batch": 7,
+    "pptTitle": "AI in Space Research",
+    "members": [
+      { "name": "Balaji", "rollNo": 33 },
+      { "name": "Nakshatra", "rollNo": 13 },
+      { "name": "Varun", "rollNo": 90 }
+    ]
+  },
+  {
+    "batch": 8,
+    "pptTitle": "AI in Future",
+    "members": [
+      { "name": "M. Shiva Ganesh", "rollNo": 81 },
+      { "name": "A. Srinivas", "rollNo": 55 },
+      { "name": "P. Jithender Reddy", "rollNo": 87 }
+    ]
+  },
+  {
+    "batch": 9,
+    "pptTitle": "Cyber Security In AI",
+    "members": [
+      { "name": "Harshitha", "rollNo": 9 },
+      { "name": "Nikitha", "rollNo": 28 },
+      { "name": "Gayathri", "rollNo": 45 }
+    ]
+  },
+  {
+    "batch": 10,
+    "pptTitle": "AI in Sports Analytics",
+    "members": [
+      { "name": "Y. Anushka", "rollNo": 16 },
+      { "name": "B. Sruthi", "rollNo": 3 },
+      { "name": "Hasini", "rollNo": 1 }
+    ]
+  },
+  {
+    "batch": 11,
+    "pptTitle": "Benefits and Challenges of AI",
+    "members": [
+      { "name": "Potnuru Vishnuvardhan", "rollNo": 44 },
+      { "name": "K Sathvik", "rollNo": 75 },
+      { "name": "G Sai Teja", "rollNo": 66 }
+    ]
+  },
+  {
+    "batch": 12,
+    "pptTitle": "AI Video Generation",
+    "members": [
+      { "name": "Ashritha Reddy", "rollNo": 14 },
+      { "name": "Hari Priya", "rollNo": 53 },
+      { "name": "SriNitha", "rollNo": 68 }
+    ]
+  },
+  {
+    "batch": 13,
+    "pptTitle": "Mobile Security",
+    "members": [
+      { "name": "Jana Rahul", "rollNo": 72 },
+      { "name": "Jaswanth Kasa", "rollNo": 76 },
+      { "name": "Aryan Raj", "rollNo": 56 }
+    ]
+  },
+  {
+    "batch": 14,
+    "pptTitle": "Cyber Security and Digital Safety",
+    "members": [
+      { "name": "Mounsish", "rollNo": 82 },
+      { "name": "Avinash", "rollNo": 27 },
+      { "name": "Nikhil Charan", "rollNo": 74 }
+    ]
+  },
+  {
+    "batch": 15,
+    "pptTitle": "AI in Everyday Life",
+    "members": [
+      { "name": "Haripavan", "rollNo": 59 },
+      { "name": "Nehan Reddy", "rollNo": 83 },
+      { "name": "Gowtham", "rollNo": 29 }
+    ]
+  },
+  {
+    "batch": 16,
+    "pptTitle": "AI In Transportation",
+    "members": [
+      { "name": "N. Bharath Kumar", "rollNo": 38 },
+      { "name": "K. Akshay", "rollNo": 77 },
+      { "name": "P. Durgaprasad", "rollNo": 12 }
+    ]
+  },
+  {
+    "batch": 17,
+    "pptTitle": "Introduction to Machine Learning",
+    "members": [
+      { "name": "M. Sai Srimanth", "rollNo": 79 },
+      { "name": "Kathi Vaishnavi", "rollNo": 32 },
+      { "name": "Jillapally Venkat Ramana", "rollNo": 73 }
+    ]
+  },
+  {
+    "batch": 18,
+    "pptTitle": "Prompt Engineering",
+    "members": [
+      { "name": "Sathwik", "rollNo": 64 },
+      { "name": "Tejeswar", "rollNo": 26 },
+      { "name": "Abhinash", "rollNo": 60 }
+    ]
+  },
+  {
+    "batch": 19,
+    "pptTitle": "Cyber Security",
+    "members": [
+      { "name": "D. Mounisha", "rollNo": 23 },
+      { "name": "B. Laxmi Prasanna", "rollNo": 20 },
+      { "name": "Ch. Komala Priya", "rollNo": 22 }
+    ]
+  },
+  {
+    "batch": 20,
+    "pptTitle": "AI in Sports Analytics",
+    "members": [
+      { "name": "Ruchith Vardhan", "rollNo": 7 },
+      { "name": "Abhishek", "rollNo": 17 },
+      { "name": "Farvez", "rollNo": 25 }
+    ]
+  },
+  {
+    "batch": 21,
+    "pptTitle": "AI in Entertainment and OTT Platforms",
+    "members": [
+      { "name": "K. Akshaya", "rollNo": 8 },
+      { "name": "S. Vindhya Vasini", "rollNo": 49 },
+      { "name": "K. Shresta Reddy", "rollNo": 34 }
+    ]
+  },
+  {
+    "batch": 22,
+    "pptTitle": "AI in Space Research",
+    "members": [
+      { "name": "Dereddy Harika", "rollNo": 24 },
+      { "name": "Poleboina Nandini", "rollNo": 42 },
+      { "name": "Rayichetti Madhumitha", "rollNo": 48 }
+    ]
+  },
+  {
+    "batch": 23,
+    "pptTitle": "Natural Language Processing (NLP)",
+    "members": [
+      { "name": "Meenakshi", "rollNo": 15 },
+      { "name": "Yashaswi", "rollNo": 41 },
+      { "name": "Shravika", "rollNo": 30 }
+    ]
+  },
+  {
+    "batch": 24,
+    "pptTitle": "Artificial General Intelligence (AGI)",
+    "members": [
+      { "name": "Jashwanth", "rollNo": 67 },
+      { "name": "Raghava", "rollNo": 6 },
+      { "name": "Sai Deekshith", "rollNo": 19 }
+    ]
+  },
+  {
+    "batch": 25,
+    "pptTitle": "Generative AI",
+    "members": [
+      { "name": "Adithya", "rollNo": 37 },
+      { "name": "Vivek", "rollNo": 36 },
+      { "name": "Charan", "rollNo": 69 }
+    ]
+  },
+  {
+    "batch": 26,
+    "pptTitle": "Cloud Computing",
+    "members": [
+      { "name": "Vara Prasad", "rollNo": 10 },
+      { "name": "Charan Varma", "rollNo": 57 },
+      { "name": "Abhinesh", "rollNo": 85 }
+    ]
+  },
+  {
+    "batch": 27,
+    "pptTitle": "AI Image Generation",
+    "members": [
+      { "name": "Madhu", "rollNo": 2 },
+      { "name": "Jashwanth", "rollNo": 89 },
+      { "name": "Sai Hrishi", "rollNo": 78 }
+    ]
+  },
+  {
+    "batch": 28,
+    "pptTitle": "AI in Education",
+    "members": [
+      { "name": "Nishwanth Reddy", "rollNo": 54 },
+      { "name": "Yaswanth", "rollNo": 43 },
+      { "name": "Gandla Jaswanth", "rollNo": 67 }
+    ]
+  },
+  {
+    "batch": 29,
+    "pptTitle": "AI In Agriculture",
+    "members": [
+      { "name": "Pettam Maniharsha", "rollNo": 88 },
+      { "name": "Karra Thanush Reddy", "rollNo": 31 },
+      { "name": "Padamati Durgaprasad Reddy", "rollNo": 12 }
+    ]
+  }
+]

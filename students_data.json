@@ -1,0 +1,265 @@
+{
+  "batches": [
+    {
+      "batch": 1,
+      "pptTitle": "AI in Transportation",
+      "members": [
+        { "rollNo": 368, "name": "Rithvika Reddy" },
+        { "rollNo": 393, "name": "Venkata Sai" },
+        { "rollNo": 384, "name": "Yedla Spandana" }
+      ]
+    },
+    {
+      "batch": 2,
+      "pptTitle": "What is Artificial Intelligence",
+      "members": [
+        { "rollNo": 379, "name": "Sai Shresta" },
+        { "rollNo": 407, "name": "Deevan Kumar" },
+        { "rollNo": 416, "name": "Harshith Chowdhary" }
+      ]
+    },
+    {
+      "batch": 3,
+      "pptTitle": "AI Image Generation",
+      "members": [
+        { "rollNo": 413, "name": "Srinivas" },
+        { "rollNo": 424, "name": "Vineeth" },
+        { "rollNo": 399, "name": "Ram Charan" }
+      ]
+    },
+    {
+      "batch": 4,
+      "pptTitle": "AI in Weather Forecasting",
+      "members": [
+        { "rollNo": 432, "name": "K. Eshwar" },
+        { "rollNo": 387, "name": "N. Ganesh" },
+        { "rollNo": 404, "name": "M. Rishi" }
+      ]
+    },
+    {
+      "batch": 5,
+      "pptTitle": "Prompt Engineering and AI Optimization",
+      "members": [
+        { "rollNo": 411, "name": "Anish Rai" },
+        { "rollNo": 398, "name": "B. Rajeshwar" },
+        { "rollNo": 385, "name": "Mary Alekhya" }
+      ]
+    },
+    {
+      "batch": 6,
+      "pptTitle": "AI",
+      "members": [
+        { "rollNo": 433, "name": "Arun Kumar" },
+        { "rollNo": 405, "name": "Hemanth" },
+        { "rollNo": 427, "name": "Jaswanth" }
+      ]
+    },
+    {
+      "batch": 7,
+      "pptTitle": "Green Computing",
+      "members": [
+        { "rollNo": 363, "name": "Roshini" },
+        { "rollNo": 364, "name": "Bindu" },
+        { "rollNo": 382, "name": "Mounika" }
+      ]
+    },
+    {
+      "batch": 8,
+      "pptTitle": "Recommendation Systems",
+      "members": [
+        { "rollNo": 383, "name": "Sanjana Velaga" },
+        { "rollNo": 370, "name": "Lasya" },
+        { "rollNo": 392, "name": "Rushik" }
+      ]
+    },
+    {
+      "batch": 9,
+      "pptTitle": "AI in Transportation",
+      "members": [
+        { "rollNo": 450, "name": "Varadha Shiva Sai Koushik" },
+        { "rollNo": 391, "name": "Kolla Sanjay" },
+        { "rollNo": 367, "name": "Erragolla Madhuri" }
+      ]
+    },
+    {
+      "batch": 10,
+      "pptTitle": "Future of Cybersecurity",
+      "members": [
+        { "rollNo": 425, "name": "Sandeep Reddy" },
+        { "rollNo": 401, "name": "Karteek" },
+        { "rollNo": 377, "name": "Shruthi" }
+      ]
+    },
+    {
+      "batch": 11,
+      "pptTitle": "AI in Agriculture",
+      "members": [
+        { "rollNo": 366, "name": "Charitha" },
+        { "rollNo": 381, "name": "Devisree" },
+        { "rollNo": 426, "name": "Saifuddin" }
+      ]
+    },
+    {
+      "batch": 12,
+      "pptTitle": "Drone Technology",
+      "members": [
+        { "rollNo": 380, "name": "Renuka" },
+        { "rollNo": 446, "name": "Yashwanth" },
+        { "rollNo": 394, "name": "Ganesh" }
+      ]
+    },
+    {
+      "batch": 13,
+      "pptTitle": "AI in Everyday Life",
+      "members": [
+        { "rollNo": 361, "name": "Jetti Pranathi" },
+        { "rollNo": 376, "name": "Akula Hima Bindhu" },
+        { "rollNo": 402, "name": "Nanda Kishore Goud" }
+      ]
+    },
+    {
+      "batch": 14,
+      "pptTitle": "AI in Banking",
+      "members": [
+        { "rollNo": 412, "name": "B Vijay Sai Praneeth" },
+        { "rollNo": 414, "name": "Karthik Yadav" },
+        { "rollNo": 395, "name": "Ritesh" }
+      ]
+    },
+    {
+      "batch": 15,
+      "pptTitle": "AI in Everyday Life",
+      "members": [
+        { "rollNo": 415, "name": "Pranav Tej" },
+        { "rollNo": 444, "name": "Koushik" },
+        { "rollNo": 435, "name": "Adhithya" }
+      ]
+    },
+    {
+      "batch": 16,
+      "pptTitle": "AI in E-Commerce",
+      "members": [
+        { "rollNo": 439, "name": "Sarthak" },
+        { "rollNo": 388, "name": "Ganesh" },
+        { "rollNo": 389, "name": "Omkar" }
+      ]
+    },
+    {
+      "batch": 17,
+      "pptTitle": "How ChatGPT Works",
+      "members": [
+        { "rollNo": 397, "name": "Tharun Kumar Rao" },
+        { "rollNo": 421, "name": "Lokesh" },
+        { "rollNo": 431, "name": "Vishwas" }
+      ]
+    },
+    {
+      "batch": 18,
+      "pptTitle": "AI in Healthcare",
+      "members": [
+        { "rollNo": 374, "name": "Akhila" },
+        { "rollNo": 371, "name": "Swetha" },
+        { "rollNo": 447, "name": "Sri Vardhan" }
+      ]
+    },
+    {
+      "batch": 19,
+      "pptTitle": "AI in Gaming",
+      "members": [
+        { "rollNo": 448, "name": "Manish" },
+        { "rollNo": 409, "name": "Nitish" },
+        { "rollNo": 406, "name": "Anand" }
+      ]
+    },
+    {
+      "batch": 20,
+      "pptTitle": "Future of Artificial Intelligence",
+      "members": [
+        { "rollNo": 365, "name": "Damayanti" },
+        { "rollNo": 373, "name": "Sreeja" },
+        { "rollNo": 430, "name": "Sidhu" }
+      ]
+    },
+    {
+      "batch": 21,
+      "pptTitle": "Human-Computer Interaction",
+      "members": [
+        { "rollNo": 378, "name": "Gojagow Srija" },
+        { "rollNo": 375, "name": "Vanga Adhipthi" },
+        { "rollNo": 428, "name": "Gone Abhinav Reddy" }
+      ]
+    },
+    {
+      "batch": 22,
+      "pptTitle": "AI in Education",
+      "members": [
+        { "rollNo": 362, "name": "Kalyani" },
+        { "rollNo": 369, "name": "Hansika" },
+        { "rollNo": 386, "name": "Prajwal" }
+      ]
+    },
+    {
+      "batch": 23,
+      "pptTitle": "Introduction to Cybersecurity",
+      "members": [
+        { "rollNo": 441, "name": "Shaik Areesh" },
+        { "rollNo": 403, "name": "Charan" },
+        { "rollNo": 422, "name": "Ramakanth" }
+      ]
+    },
+    {
+      "batch": 24,
+      "pptTitle": "Cyber Security",
+      "members": [
+        { "rollNo": 442, "name": "S. Chandra Teja" },
+        { "rollNo": 440, "name": "S. Shiva Teja" },
+        { "rollNo": 429, "name": "G. Yashwanth" }
+      ]
+    },
+    {
+      "batch": 25,
+      "pptTitle": "How ChatGPT Works",
+      "members": [
+        { "rollNo": 437, "name": "P. Venkata Satya Narayana" },
+        { "rollNo": 408, "name": "Sai Ram" },
+        { "rollNo": 420, "name": "Shiva Sai" }
+      ]
+    },
+    {
+      "batch": 26,
+      "pptTitle": "AI in Transportation",
+      "members": [
+        { "rollNo": 436, "name": "Ritesh" },
+        { "rollNo": 445, "name": "Mohan" },
+        { "rollNo": 372, "name": "Minnu" }
+      ]
+    },
+    {
+      "batch": 27,
+      "pptTitle": "Green Computing",
+      "members": [
+        { "rollNo": 434, "name": "Raju" },
+        { "rollNo": 423, "name": "Mithesh" },
+        { "rollNo": 417, "name": "Thaman" }
+      ]
+    },
+    {
+      "batch": 28,
+      "pptTitle": "Smart Cities",
+      "members": [
+        { "rollNo": 408, "name": "Praneeth" },
+        { "rollNo": 410, "name": "Koushik" },
+        { "rollNo": 390, "name": "Ankith" }
+      ]
+    },
+    {
+      "batch": 29,
+      "pptTitle": "AI and Smart Applications",
+      "members": [
+        { "rollNo": 449, "name": "G. Rohith" },
+        { "rollNo": 418, "name": "Deep Dharshan" },
+        { "rollNo": 396, "name": "A. Vishnu Vardhan" }
+      ]
+    }
+  ]
+}
