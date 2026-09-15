@@ -35,6 +35,7 @@ export const LivePresentationRoom: React.FC = () => {
     setSelectedBatch,
     saveBatchEvaluation,
     setBatchStatus,
+    openRePresentModal,
     pickRandomPendingBatch,
     startPresentationWithBatch,
     setActiveTab,
@@ -294,6 +295,38 @@ export const LivePresentationRoom: React.FC = () => {
         </div>
       </div>
 
+      {/* Re-Presentation Alert Banner if Batch is marked for Re-Present */}
+      {selectedBatch.status === 'Re-Present' && (
+        <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 rounded-2xl p-5 text-white shadow-md border border-purple-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4 animate-in fade-in">
+          <div className="space-y-1.5 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-purple-500 text-white shadow-xs">
+                <RotateCcw className="w-3.5 h-3.5" /> Re-Presentation Mode
+              </span>
+              <span className="text-xs text-purple-200">
+                {selectedBatch.members.filter((m) => m.needsRePresent).length} Student(s) Required to Present
+              </span>
+            </div>
+            <div>
+              <span className="text-[11px] uppercase font-bold text-purple-300 tracking-wider block">
+                Assigned Seminar Topic (Common to all members):
+              </span>
+              <h3 className="text-base sm:text-lg font-black text-white leading-snug">
+                {selectedBatch.rePresentTopic || 'No specific seminar topic specified'}
+              </h3>
+            </div>
+          </div>
+
+          <button
+            onClick={() => openRePresentModal(selectedBatch)}
+            className="px-4 py-2 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-colors shrink-0 flex items-center gap-1.5 self-start md:self-auto"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-purple-300" />
+            <span>Edit Seminar Topic &amp; Roster</span>
+          </button>
+        </div>
+      )}
+
       {/* Main Scoring Grid: 2 Columns */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Attendance & Trainer Notes (5 Cols) */}
@@ -303,7 +336,7 @@ export const LivePresentationRoom: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-blue-600" />
-                <h3 className="font-bold text-slate-900 text-sm">Student Attendance</h3>
+                <h3 className="font-bold text-slate-900 text-sm">Student Attendance &amp; Status</h3>
               </div>
               <div className="flex items-center gap-1.5 text-[11px]">
                 <button
@@ -323,43 +356,72 @@ export const LivePresentationRoom: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              {attendance.map((student) => (
-                <div
-                  key={student.id}
-                  onClick={() => handleToggleAttendance(student.id)}
-                  className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
-                    student.present
-                      ? 'bg-emerald-50/50 border-emerald-200 text-emerald-900'
-                      : 'bg-slate-50 border-slate-200 text-slate-500 opacity-80'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span
-                      className={`w-6 h-6 rounded-lg flex items-center justify-center font-bold text-xs ${
-                        student.present ? 'bg-emerald-600 text-white' : 'bg-slate-300 text-slate-600'
-                      }`}
-                    >
-                      {student.present ? '✓' : '✕'}
-                    </span>
-                    <div>
-                      <span className="font-extrabold text-xs">{student.rollNo}</span>
-                      {selectedBatch.members.find((m) => m.id === student.id)?.name && (
-                        <span className="text-xs text-slate-600 ml-1.5">
-                          ({selectedBatch.members.find((m) => m.id === student.id)?.name})
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <span
-                    className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
-                      student.present ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'
+              {attendance.map((student) => {
+                const memberData = selectedBatch.members.find((m) => m.id === student.id || m.rollNo === student.rollNo);
+                return (
+                  <div
+                    key={student.id}
+                    className={`p-3 rounded-xl border flex flex-col gap-2 transition-all ${
+                      student.present
+                        ? 'bg-emerald-50/50 border-emerald-200 text-emerald-900'
+                        : 'bg-slate-50 border-slate-200 text-slate-500 opacity-80'
                     }`}
                   >
-                    {student.present ? 'Present' : 'Absent'}
-                  </span>
-                </div>
-              ))}
+                    <div
+                      onClick={() => handleToggleAttendance(student.id)}
+                      className="flex items-center justify-between cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span
+                          className={`w-6 h-6 rounded-lg flex items-center justify-center font-bold text-xs ${
+                            student.present ? 'bg-emerald-600 text-white' : 'bg-slate-300 text-slate-600'
+                          }`}
+                        >
+                          {student.present ? '✓' : '✕'}
+                        </span>
+                        <div>
+                          <span className="font-extrabold text-xs">{student.rollNo}</span>
+                          {memberData?.name && (
+                            <span className="text-xs text-slate-600 ml-1.5">
+                              ({memberData.name})
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        {/* If Batch is Re-Present, show member-level satisfaction badge */}
+                        {selectedBatch.status === 'Re-Present' && memberData && (
+                          memberData.satisfied ? (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-300">
+                              ✓ Cleared
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 border border-purple-300">
+                              ⚠️ Must Re-Present
+                            </span>
+                          )
+                        )}
+
+                        <span
+                          className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                            student.present ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'
+                          }`}
+                        >
+                          {student.present ? 'Present' : 'Absent'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Show member individual remark if present */}
+                    {memberData?.rePresentRemarks && (
+                      <div className="text-[11px] text-purple-900 bg-purple-50/80 px-2 py-1 rounded-lg border border-purple-100 italic">
+                        Remark: &quot;{memberData.rePresentRemarks}&quot;
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -513,10 +575,11 @@ export const LivePresentationRoom: React.FC = () => {
             Mark Absent
           </button>
           <button
-            onClick={() => handleSetQuickStatus('Re-Present')}
-            className="px-3 py-1.5 rounded-lg text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 transition-colors"
+            onClick={() => openRePresentModal(selectedBatch)}
+            className="px-3 py-1.5 rounded-lg text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 transition-colors flex items-center gap-1"
           >
-            Schedule Re-Present
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Schedule Re-Present</span>
           </button>
           <button
             onClick={() => handleSetQuickStatus('Rejected')}

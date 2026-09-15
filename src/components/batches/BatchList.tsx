@@ -35,6 +35,7 @@ export const BatchList: React.FC = () => {
     resetAllStatuses,
     startPresentationWithBatch,
     deleteBatch,
+    openRePresentModal,
   } = useBatch();
 
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
@@ -222,16 +223,49 @@ export const BatchList: React.FC = () => {
                             B{batch.batchNumber}
                           </span>
                         </td>
-                        <td className="py-3 px-4 font-medium text-slate-900 max-w-xs truncate">
-                          {batch.topic}
+                        <td className="py-3 px-4 max-w-xs">
+                          <div className="font-medium text-slate-900 truncate">
+                            {batch.topic}
+                          </div>
+                          {batch.status === 'Re-Present' && batch.rePresentTopic && (
+                            <div className="text-[11px] font-semibold text-purple-700 flex items-center gap-1 mt-0.5 truncate">
+                              <span className="px-1.5 py-0.2 rounded bg-purple-100 text-purple-800 text-[10px]">
+                                Seminar:
+                              </span>
+                              <span className="truncate">{batch.rePresentTopic}</span>
+                            </div>
+                          )}
                         </td>
                         <td className="py-3 px-4 text-slate-600">
-                          {batch.members.map((m) => m.rollNo).join(', ')}
+                          {batch.status === 'Re-Present' ? (
+                            <div className="flex flex-wrap gap-1">
+                              {batch.members.map((m) => (
+                                <span
+                                  key={m.id}
+                                  className={`px-1.5 py-0.2 rounded text-[10px] font-medium border ${
+                                    m.satisfied
+                                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                      : 'bg-purple-50 text-purple-700 border-purple-200 font-bold'
+                                  }`}
+                                >
+                                  {m.rollNo} ({m.satisfied ? 'Cleared' : 'Re-Present'})
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            batch.members.map((m) => m.rollNo).join(', ')
+                          )}
                         </td>
                         <td className="py-3 px-4">
-                          <span className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${statusCfg.badgeClass}`}>
+                          <button
+                            type="button"
+                            onClick={() => batch.status === 'Re-Present' && openRePresentModal(batch)}
+                            className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${statusCfg.badgeClass} ${
+                              batch.status === 'Re-Present' ? 'hover:opacity-80 cursor-pointer' : ''
+                            }`}
+                          >
                             {batch.status}
-                          </span>
+                          </button>
                         </td>
                         <td className="py-3 px-4">
                           {batch.evaluation ? (

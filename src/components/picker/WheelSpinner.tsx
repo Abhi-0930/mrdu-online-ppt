@@ -316,6 +316,18 @@ export const WheelSpinner: React.FC = () => {
               <p className="text-base font-bold text-purple-900 leading-snug">{winnerBatch.topic}</p>
             </div>
 
+            {/* Seminar Topic Banner if in Re-Present status */}
+            {winnerBatch.status === 'Re-Present' && (
+              <div className="bg-purple-100/80 border border-purple-300 rounded-xl p-3 space-y-1 text-xs">
+                <span className="text-[11px] font-bold text-purple-900 uppercase tracking-wider block">
+                  🔁 Assigned Seminar Topic (Common to all members):
+                </span>
+                <p className="font-bold text-purple-950 text-sm">
+                  {winnerBatch.rePresentTopic || 'No seminar topic specified'}
+                </p>
+              </div>
+            )}
+
             {/* Team Members Grid with Roll Numbers & Names */}
             <div className="pt-2 border-t border-purple-200/60 space-y-2">
               <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
@@ -325,15 +337,35 @@ export const WheelSpinner: React.FC = () => {
                 {winnerBatch.members.map((member) => (
                   <div
                     key={member.id}
-                    className="p-3 bg-white rounded-xl border border-purple-200/80 shadow-2xs text-xs space-y-1"
+                    className={`p-3 rounded-xl border shadow-2xs text-xs space-y-1 ${
+                      winnerBatch.status === 'Re-Present'
+                        ? member.satisfied
+                          ? 'bg-emerald-50 border-emerald-200'
+                          : 'bg-purple-50 border-purple-300'
+                        : 'bg-white border-purple-200/80'
+                    }`}
                   >
-                    <div className="font-extrabold text-slate-900 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
-                      <span>Roll No: {member.rollNo}</span>
+                    <div className="font-extrabold text-slate-900 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`w-2 h-2 rounded-full ${member.satisfied ? 'bg-emerald-500' : 'bg-purple-500'} shrink-0`} />
+                        <span>Roll No: {member.rollNo}</span>
+                      </div>
+                      {winnerBatch.status === 'Re-Present' && (
+                        <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${
+                          member.satisfied ? 'bg-emerald-100 text-emerald-800' : 'bg-purple-100 text-purple-800'
+                        }`}>
+                          {member.satisfied ? 'Cleared' : 'Re-Present'}
+                        </span>
+                      )}
                     </div>
                     {member.name && (
                       <div className="text-xs font-semibold text-purple-900 truncate pl-3.5">
                         {member.name}
+                      </div>
+                    )}
+                    {member.rePresentRemarks && (
+                      <div className="text-[10px] text-purple-700 italic pl-3.5 truncate">
+                        &quot;{member.rePresentRemarks}&quot;
                       </div>
                     )}
                   </div>

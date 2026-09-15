@@ -6,6 +6,9 @@ export interface BatchMember {
   name?: string;
   present: boolean;
   individualRemarks?: string;
+  satisfied?: boolean;
+  needsRePresent?: boolean;
+  rePresentRemarks?: string;
 }
 
 export interface EvaluationScore {
@@ -43,6 +46,8 @@ export interface Batch {
   updatedDate: string;
   scheduledDate?: string;
   orderIndex?: number;
+  rePresentTopic?: string;
+  rePresentDate?: string;
 }
 
 export interface SessionLog {

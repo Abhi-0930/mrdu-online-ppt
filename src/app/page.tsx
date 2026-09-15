@@ -13,6 +13,7 @@ import { AnalyticsView } from '@/components/analytics/AnalyticsView';
 import { SessionHistoryView } from '@/components/history/SessionHistoryView';
 import { BatchModal } from '@/components/batches/BatchModal';
 import { ExcelImportExportModal } from '@/components/batches/ExcelImportExportModal';
+import { RePresentModal } from '@/components/presentation/RePresentModal';
 import { SettingsModal } from '@/components/settings/SettingsModal';
 import { Download, Wifi, WifiOff, CheckCircle2, Sparkles, Loader2 } from 'lucide-react';
 
@@ -135,6 +136,7 @@ function MainAppContent() {
       {/* Global Modals */}
       <BatchModal />
       <ExcelImportExportModal />
+      <RePresentModal />
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );

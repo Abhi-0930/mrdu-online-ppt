@@ -185,6 +185,18 @@ export const QuickPicker: React.FC = () => {
               <p className="text-base font-bold text-blue-900 leading-snug">{selectedBatch.topic}</p>
             </div>
 
+            {/* Seminar Topic Banner if in Re-Present status */}
+            {selectedBatch.status === 'Re-Present' && (
+              <div className="bg-purple-100/70 border border-purple-300 rounded-xl p-3 space-y-1 text-xs">
+                <span className="text-[11px] font-bold text-purple-900 uppercase tracking-wider block">
+                  🔁 Assigned Seminar Topic (Common to all members):
+                </span>
+                <p className="font-bold text-purple-950 text-sm">
+                  {selectedBatch.rePresentTopic || 'No seminar topic specified'}
+                </p>
+              </div>
+            )}
+
             {/* Team Members List */}
             <div className="pt-2 border-t border-blue-200/60 space-y-2">
               <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
@@ -194,10 +206,26 @@ export const QuickPicker: React.FC = () => {
                 {selectedBatch.members.map((member) => (
                   <div
                     key={member.id}
-                    className="p-2 bg-white rounded-lg border border-blue-200 shadow-2xs text-xs space-y-0.5"
+                    className={`p-2 rounded-lg border shadow-2xs text-xs space-y-0.5 ${
+                      selectedBatch.status === 'Re-Present'
+                        ? member.satisfied
+                          ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                          : 'bg-purple-50 border-purple-200 text-purple-950 font-bold'
+                        : 'bg-white border-blue-200'
+                    }`}
                   >
-                    <div className="font-extrabold text-slate-900">{member.rollNo}</div>
+                    <div className="font-extrabold text-slate-900 flex items-center justify-between">
+                      <span>{member.rollNo}</span>
+                      {selectedBatch.status === 'Re-Present' && (
+                        <span className="text-[10px] font-normal px-1 rounded bg-white/70">
+                          {member.satisfied ? 'Cleared' : 'Re-Present'}
+                        </span>
+                      )}
+                    </div>
                     {member.name && <div className="text-[11px] text-slate-500 truncate">{member.name}</div>}
+                    {member.rePresentRemarks && (
+                      <div className="text-[10px] text-purple-700 italic truncate">&quot;{member.rePresentRemarks}&quot;</div>
+                    )}
                   </div>
                 ))}
               </div>

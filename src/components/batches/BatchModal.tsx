@@ -12,6 +12,7 @@ export const BatchModal: React.FC = () => {
   const [topic, setTopic] = useState<string>('');
   const [pptLink, setPptLink] = useState<string>('');
   const [status, setStatus] = useState<PresentationStatus>('Pending');
+  const [rePresentTopic, setRePresentTopic] = useState<string>('');
   const [members, setMembers] = useState<{ id: string; rollNo: string; name: string }[]>([
     { id: '1', rollNo: '', name: '' },
   ]);
@@ -25,6 +26,7 @@ export const BatchModal: React.FC = () => {
       setTopic(editingBatch.topic);
       setPptLink(editingBatch.pptLink || '');
       setStatus(editingBatch.status);
+      setRePresentTopic(editingBatch.rePresentTopic || '');
       setMembers(
         editingBatch.members.map((m) => ({
           id: m.id,
@@ -38,6 +40,7 @@ export const BatchModal: React.FC = () => {
       setTopic('');
       setPptLink('');
       setStatus('Pending');
+      setRePresentTopic('');
       setMembers([{ id: '1', rollNo: '', name: '' }]);
     }
     setError('');
@@ -111,6 +114,7 @@ export const BatchModal: React.FC = () => {
           topic: topic.trim(),
           pptLink: pptLink.trim() || undefined,
           status,
+          rePresentTopic: status === 'Re-Present' ? rePresentTopic.trim() : editingBatch.rePresentTopic,
           members: validMembers,
         });
       } else {
@@ -119,6 +123,7 @@ export const BatchModal: React.FC = () => {
           topic: topic.trim(),
           pptLink: pptLink.trim() || undefined,
           status,
+          rePresentTopic: status === 'Re-Present' ? rePresentTopic.trim() : undefined,
           members: validMembers,
         });
       }
@@ -192,6 +197,23 @@ export const BatchModal: React.FC = () => {
               </select>
             </div>
           </div>
+
+          {/* Conditional Seminar Topic input if status is Re-Present */}
+          {status === 'Re-Present' && (
+            <div className="p-3 bg-purple-50 rounded-xl border border-purple-200 space-y-1">
+              <label className="block text-xs font-bold text-purple-950 mb-1">
+                Seminar Topic (Common for all team members) <span className="text-rose-500">*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Transformer Architecture & Self Attention Mechanism"
+                value={rePresentTopic}
+                onChange={(e) => setRePresentTopic(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 font-medium"
+                required={status === 'Re-Present'}
+              />
+            </div>
+          )}
 
           {/* Row 2: Presentation Topic */}
           <div>

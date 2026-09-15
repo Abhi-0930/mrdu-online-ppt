@@ -13,6 +13,8 @@ import {
   ChevronDown,
   CheckCircle2,
   Award,
+  RotateCcw,
+  BookOpen,
 } from 'lucide-react';
 
 interface BatchCardProps {
@@ -20,8 +22,14 @@ interface BatchCardProps {
 }
 
 export const BatchCard: React.FC<BatchCardProps> = ({ batch }) => {
-  const { setBatchStatus, setEditingBatch, setIsBatchModalOpen, deleteBatch, startPresentationWithBatch } =
-    useBatch();
+  const {
+    setBatchStatus,
+    setEditingBatch,
+    setIsBatchModalOpen,
+    deleteBatch,
+    startPresentationWithBatch,
+    openRePresentModal,
+  } = useBatch();
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
 
   const statusCfg = STATUS_CONFIG[batch.status as PresentationStatus] || STATUS_CONFIG.Pending;
@@ -29,7 +37,11 @@ export const BatchCard: React.FC<BatchCardProps> = ({ batch }) => {
 
   const handleStatusChange = async (newStatus: PresentationStatus) => {
     setIsStatusMenuOpen(false);
-    await setBatchStatus(batch.id, newStatus);
+    if (newStatus === 'Re-Present') {
+      openRePresentModal(batch);
+    } else {
+      await setBatchStatus(batch.id, newStatus);
+    }
   };
 
   const handleEdit = () => {
@@ -101,7 +113,28 @@ export const BatchCard: React.FC<BatchCardProps> = ({ batch }) => {
           </h3>
         </div>
 
-        {/* Members Roll Numbers */}
+        {/* Seminar Topic Highlight Card if in Re-Present status */}
+        {batch.status === 'Re-Present' && (
+          <div className="bg-purple-50/80 rounded-lg p-2.5 border border-purple-200 text-xs space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-purple-900 flex items-center gap-1 text-[11px]">
+                <RotateCcw className="w-3.5 h-3.5 text-purple-600" /> Seminar Topic:
+              </span>
+              <button
+                type="button"
+                onClick={() => openRePresentModal(batch)}
+                className="text-[10px] text-purple-700 hover:text-purple-950 font-bold underline"
+              >
+                Edit
+              </button>
+            </div>
+            <p className="font-bold text-purple-950 text-xs leading-snug">
+              {batch.rePresentTopic || 'No seminar topic set'}
+            </p>
+          </div>
+        )}
+
+        {/* Members Roll Numbers & Status */}
         <div className="space-y-1 pt-1">
           <div className="flex items-center justify-between text-xs text-slate-500">
             <span className="flex items-center gap-1 font-medium">
@@ -112,20 +145,51 @@ export const BatchCard: React.FC<BatchCardProps> = ({ batch }) => {
             </span>
           </div>
           <div className="flex flex-wrap gap-1.5">
-            {batch.members.map((member) => (
-              <span
-                key={member.id}
-                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border ${
-                  member.present
-                    ? 'bg-slate-50 text-slate-700 border-slate-200'
-                    : 'bg-amber-50 text-amber-700 border-amber-200 line-through opacity-75'
-                }`}
-                title={member.name ? `${member.rollNo} - ${member.name}` : member.rollNo}
-              >
-                <span>{member.rollNo}</span>
-                {member.name && <span className="text-[10px] text-slate-400 truncate max-w-[80px]">({member.name})</span>}
-              </span>
-            ))}
+            {batch.members.map((member) => {
+              if (batch.status === 'Re-Present') {
+                return (
+                  <span
+                    key={member.id}
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold border ${
+                      member.satisfied
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                        : 'bg-purple-50 text-purple-800 border-purple-300'
+                    }`}
+                    title={
+                      member.rePresentRemarks
+                        ? `${member.rollNo}: ${member.rePresentRemarks}`
+                        : member.name
+                        ? `${member.rollNo} - ${member.name}`
+                        : member.rollNo
+                    }
+                  >
+                    <span>{member.rollNo}</span>
+                    <span className="text-[10px] font-normal">
+                      ({member.satisfied ? 'Cleared' : 'Re-Present'})
+                    </span>
+                  </span>
+                );
+              }
+
+              return (
+                <span
+                  key={member.id}
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border ${
+                    member.present
+                      ? 'bg-slate-50 text-slate-700 border-slate-200'
+                      : 'bg-amber-50 text-amber-700 border-amber-200 line-through opacity-75'
+                  }`}
+                  title={member.name ? `${member.rollNo} - ${member.name}` : member.rollNo}
+                >
+                  <span>{member.rollNo}</span>
+                  {member.name && (
+                    <span className="text-[10px] text-slate-400 truncate max-w-[80px]">
+                      ({member.name})
+                    </span>
+                  )}
+                </span>
+              );
+            })}
           </div>
         </div>
 

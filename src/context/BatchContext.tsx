@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import {
   Batch,
+  BatchMember,
   PresentationStatus,
   SessionLog,
   AppSettings,
@@ -70,6 +71,15 @@ interface BatchContextType {
   setEditingBatch: (batch: Batch | null) => void;
   isExcelModalOpen: boolean;
   setIsExcelModalOpen: (open: boolean) => void;
+  isRePresentModalOpen: boolean;
+  setIsRePresentModalOpen: (open: boolean) => void;
+  rePresentTargetBatch: Batch | null;
+  setRePresentTargetBatch: (batch: Batch | null) => void;
+  openRePresentModal: (batch: Batch) => void;
+  confirmBatchRePresent: (
+    batchId: string,
+    data: { rePresentTopic: string; members: BatchMember[]; trainerNotes?: string }
+  ) => Promise<void>;
 
   // Actions
   addBatch: (batch: Omit<Batch, 'id' | 'createdDate' | 'updatedDate'>) => Promise<string>;
@@ -123,6 +133,8 @@ export function BatchProvider({ children }: { children: React.ReactNode }) {
   const [isBatchModalOpen, setIsBatchModalOpen] = useState<boolean>(false);
   const [editingBatch, setEditingBatch] = useState<Batch | null>(null);
   const [isExcelModalOpen, setIsExcelModalOpen] = useState<boolean>(false);
+  const [isRePresentModalOpen, setIsRePresentModalOpen] = useState<boolean>(false);
+  const [rePresentTargetBatch, setRePresentTargetBatch] = useState<Batch | null>(null);
 
   // Synchronized activeTab setter that updates URL hash
   const setActiveTab = useCallback((tab: NavigationTab) => {
@@ -456,9 +468,88 @@ export function BatchProvider({ children }: { children: React.ReactNode }) {
     if (settings.soundEffects) AudioEffects.playSuccessChime();
   };
 
+  const openRePresentModal = (batch: Batch) => {
+    setRePresentTargetBatch(batch);
+    setIsRePresentModalOpen(true);
+  };
+
+  const confirmBatchRePresent = async (
+    batchId: string,
+    data: {
+      rePresentTopic: string;
+      members: BatchMember[];
+      trainerNotes?: string;
+    }
+  ) => {
+    const target = allBatches.find((b) => b.id === batchId);
+    if (!target) return;
+
+    const now = new Date().toISOString();
+    const notes = data.trainerNotes !== undefined ? data.trainerNotes : target.trainerNotes;
+    const updatedHistory = [
+      ...(target.history || []),
+      {
+        status: 'Re-Present' as PresentationStatus,
+        timestamp: now,
+        notes: `Re-presentation scheduled. Seminar Topic: ${data.rePresentTopic}. ${notes || ''}`.trim(),
+      },
+    ];
+
+    const updatedBatch: Batch = {
+      ...target,
+      status: 'Re-Present',
+      rePresentTopic: data.rePresentTopic,
+      rePresentDate: now,
+      members: data.members,
+      trainerNotes: notes,
+      history: updatedHistory,
+      updatedDate: now,
+    };
+
+    setAllBatches((prev) => prev.map((b) => (b.id === batchId ? updatedBatch : b)));
+    if (selectedBatch?.id === batchId) setSelectedBatch(updatedBatch);
+    dbSaveBatch(updatedBatch).catch(() => {});
+
+    const presentCount = updatedBatch.members.filter((m) => m.present).length;
+    const sessionLog: SessionLog = {
+      id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      batchId: target.id,
+      batchNumber: target.batchNumber,
+      section: target.section || selectedSection,
+      topic: target.topic,
+      status: 'Re-Present',
+      score: updatedBatch.evaluation?.totalScore,
+      grade: updatedBatch.evaluation?.grade,
+      presentCount,
+      totalMembers: updatedBatch.members.length,
+      timestamp: now,
+      trainerNotes: `Seminar Topic: ${data.rePresentTopic}. ${notes || ''}`.trim(),
+    };
+
+    setAllSessionLogs((prev) => [sessionLog, ...prev]);
+    dbSaveSessionLog(sessionLog).catch(() => {});
+
+    try {
+      await Promise.all([
+        ApiService.updateBatch(updatedBatch),
+        ApiService.createSessionLog(sessionLog),
+      ]);
+    } catch (err) {
+      console.error('Failed to save Re-Present status & log in MongoDB:', err);
+    }
+
+    if (settings.soundEffects) AudioEffects.playSuccessChime();
+  };
+
   const setBatchStatus = async (id: string, status: PresentationStatus, notes?: string) => {
     const target = allBatches.find((b) => b.id === id);
     if (!target) return;
+
+    // If setting to Re-Present, trigger the Seminar Topic & Member Satisfaction modal
+    if (status === 'Re-Present') {
+      openRePresentModal(target);
+      return;
+    }
 
     const now = new Date().toISOString();
     const updatedHistory = [...(target.history || []), { status, timestamp: now, notes: notes || target.trainerNotes }];
@@ -784,6 +875,12 @@ export function BatchProvider({ children }: { children: React.ReactNode }) {
         setEditingBatch,
         isExcelModalOpen,
         setIsExcelModalOpen,
+        isRePresentModalOpen,
+        setIsRePresentModalOpen,
+        rePresentTargetBatch,
+        setRePresentTargetBatch,
+        openRePresentModal,
+        confirmBatchRePresent,
         addBatch,
         updateBatch,
         deleteBatch,

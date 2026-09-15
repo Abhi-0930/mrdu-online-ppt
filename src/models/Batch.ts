@@ -7,6 +7,9 @@ export interface IBatchMember {
   name?: string;
   present: boolean;
   individualRemarks?: string;
+  satisfied?: boolean;
+  needsRePresent?: boolean;
+  rePresentRemarks?: string;
 }
 
 export interface IEvaluationScore {
@@ -44,6 +47,8 @@ export interface IBatch extends Document {
   updatedDate: string;
   scheduledDate?: string;
   orderIndex?: number;
+  rePresentTopic?: string;
+  rePresentDate?: string;
 }
 
 const BatchMemberSchema = new Schema<IBatchMember>(
@@ -53,6 +58,9 @@ const BatchMemberSchema = new Schema<IBatchMember>(
     name: { type: String },
     present: { type: Boolean, default: true },
     individualRemarks: { type: String },
+    satisfied: { type: Boolean, default: false },
+    needsRePresent: { type: Boolean, default: false },
+    rePresentRemarks: { type: String },
   },
   { _id: false }
 );
@@ -113,6 +121,8 @@ const BatchSchema = new Schema<IBatch>(
     updatedDate: { type: String, default: () => new Date().toISOString() },
     scheduledDate: { type: String },
     orderIndex: { type: Number },
+    rePresentTopic: { type: String },
+    rePresentDate: { type: String },
   },
   {
     timestamps: true,
