@@ -10,6 +10,7 @@ import {
   EvaluationScore,
   calculateGrade,
 } from '@/types/batch';
+import { ApiService } from '@/services/apiService';
 import {
   dbGetAllBatches,
   dbSaveBatch,
@@ -24,7 +25,7 @@ import {
   dbGetLatestSchedule,
   dbSaveSchedule,
 } from '@/services/indexedDB';
-import { ALL_INITIAL_BATCHES, SAMPLE_BATCHES_AIML_A, SAMPLE_BATCHES_AIML_E } from '@/services/sampleData';
+import { ALL_INITIAL_BATCHES } from '@/services/sampleData';
 import { AudioEffects } from '@/services/audioService';
 
 export type NavigationTab =
@@ -61,7 +62,7 @@ interface BatchContextType {
   sessionLogs: SessionLog[];
   settings: AppSettings;
   updateSettings: (newSettings: Partial<AppSettings>) => Promise<void>;
-  
+
   // Modals
   isBatchModalOpen: boolean;
   setIsBatchModalOpen: (open: boolean) => void;
@@ -87,7 +88,7 @@ interface BatchContextType {
   startPresentationWithBatch: (batch: Batch) => void;
   loadSampleData: () => Promise<void>;
   clearAllData: () => Promise<void>;
-  
+
   // Schedule
   todayQueue: Batch[];
   todayQueueIndex: number;
@@ -184,71 +185,56 @@ export function BatchProvider({ children }: { children: React.ReactNode }) {
   const [todayQueueIds, setTodayQueueIds] = useState<string[]>([]);
   const [todayQueueIndex, setTodayQueueIndex] = useState<number>(0);
 
-  // Initial Data Fetch from IndexedDB
+  // Initial Data Fetch from MongoDB Atlas (with local IndexedDB fallback)
   const refreshData = useCallback(async () => {
     setIsLoading(true);
     try {
       let loadedBatches: Batch[] = [];
+      let loadedLogs: SessionLog[] = [];
+      let loadedSettings: AppSettings = settings;
+      let latestSchedule: any = null;
+
       try {
-        loadedBatches = await dbGetAllBatches();
-      } catch (e) {
-        console.warn('Could not read IndexedDB batches:', e);
-      }
+        // Fetch from MongoDB backend API
+        loadedBatches = await ApiService.getAllBatches();
+        loadedLogs = await ApiService.getAllSessionLogs();
+        loadedSettings = await ApiService.getSettings();
+        latestSchedule = await ApiService.getSchedule(selectedSection);
 
-      // If IndexedDB has no batches, or contains legacy mock titles, seed with real 58 batches (29 E + 29 A)
-      if (
-        !loadedBatches ||
-        loadedBatches.length === 0 ||
-        loadedBatches.some((b) => b.topic.includes('Brain Tumor') || b.topic.includes('Autonomous Drone'))
-      ) {
-        try {
-          await dbClearAllBatches();
-          await dbSaveBatchesBulk(ALL_INITIAL_BATCHES);
-          loadedBatches = await dbGetAllBatches();
-        } catch {
-          loadedBatches = ALL_INITIAL_BATCHES;
+        // Cache loaded data into IndexedDB for offline support
+        if (loadedBatches && loadedBatches.length > 0) {
+          dbClearAllBatches().then(() => dbSaveBatchesBulk(loadedBatches)).catch(() => {});
         }
-      } else {
-        // If Section A batches are missing, append them
-        const hasSectionA = loadedBatches.some((b) => b.section === 'AIML-A');
-        if (!hasSectionA) {
-          try {
-            const combined = [...loadedBatches, ...SAMPLE_BATCHES_AIML_A];
-            await dbSaveBatchesBulk(combined);
-            loadedBatches = await dbGetAllBatches();
-          } catch {
-            loadedBatches = [...loadedBatches, ...SAMPLE_BATCHES_AIML_A];
-          }
+        if (loadedLogs) {
+          dbClearAllSessionLogs().then(() => loadedLogs.forEach((l) => dbSaveSessionLog(l))).catch(() => {});
         }
+        if (loadedSettings) {
+          dbSaveSettings(loadedSettings).catch(() => {});
+        }
+      } catch (apiErr) {
+        console.warn('MongoDB API unreachable, falling back to local IndexedDB:', apiErr);
+        // Fallback to IndexedDB
+        loadedBatches = await dbGetAllBatches().catch(() => []);
+        loadedLogs = await dbGetAllSessionLogs().catch(() => []);
+        loadedSettings = await dbGetSettings().catch(() => settings);
+        latestSchedule = await dbGetLatestSchedule().catch(() => undefined);
       }
-
-      const loadedLogs = await dbGetAllSessionLogs().catch(() => []);
-      const loadedSettings = await dbGetSettings().catch(() => ({
-        facultyName: 'Faculty Member',
-        subjectName: 'AI & Machine Learning Lab',
-        academicYear: '2026-2027',
-        soundEffects: true,
-        confettiEnabled: true,
-        rubricMaxScore: 10,
-        customSnippets: [],
-      }));
-      const latestSchedule = await dbGetLatestSchedule().catch(() => undefined);
 
       setAllBatches(loadedBatches && loadedBatches.length > 0 ? loadedBatches : ALL_INITIAL_BATCHES);
       setAllSessionLogs(loadedLogs);
       setSettings(loadedSettings);
 
       if (latestSchedule) {
-        setTodayQueueIds(latestSchedule.batchIds);
-        setTodayQueueIndex(latestSchedule.currentIndex);
+        setTodayQueueIds(latestSchedule.batchIds || []);
+        setTodayQueueIndex(latestSchedule.currentIndex || 0);
       }
     } catch (err) {
-      console.error('Error loading data from IndexedDB:', err);
+      console.error('Error in refreshData:', err);
       setAllBatches(ALL_INITIAL_BATCHES);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [selectedSection]);
 
   useEffect(() => {
     refreshData();
@@ -375,7 +361,7 @@ export function BatchProvider({ children }: { children: React.ReactNode }) {
       .filter((b): b is Batch => Boolean(b && (b.section || 'AIML-E') === selectedSection));
   }, [todayQueueIds, allBatches, selectedSection]);
 
-  // Batch CRUD Operations
+  // Batch CRUD Operations (MongoDB Atlas Sync + Local State)
   const addBatch = async (batchData: Omit<Batch, 'id' | 'createdDate' | 'updatedDate'>): Promise<string> => {
     const id = `batch-${selectedSection.toLowerCase()}-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const now = new Date().toISOString();
@@ -387,8 +373,17 @@ export function BatchProvider({ children }: { children: React.ReactNode }) {
       updatedDate: now,
     };
 
-    await dbSaveBatch(newBatch);
+    // Instant local state update
     setAllBatches((prev) => [...prev, newBatch]);
+    dbSaveBatch(newBatch).catch(() => {});
+
+    // Save in MongoDB
+    try {
+      await ApiService.createBatch(newBatch);
+    } catch (err) {
+      console.error('Failed to create batch in MongoDB:', err);
+    }
+
     if (settings.soundEffects) AudioEffects.playSuccessChime();
     return id;
   };
@@ -400,19 +395,33 @@ export function BatchProvider({ children }: { children: React.ReactNode }) {
       updatedDate: new Date().toISOString(),
     };
 
-    await dbSaveBatch(batchWithTime);
     setAllBatches((prev) => prev.map((b) => (b.id === batchWithTime.id ? batchWithTime : b)));
     if (selectedBatch?.id === batchWithTime.id) {
       setSelectedBatch(batchWithTime);
     }
+    dbSaveBatch(batchWithTime).catch(() => {});
+
+    // Save in MongoDB
+    try {
+      await ApiService.updateBatch(batchWithTime);
+    } catch (err) {
+      console.error('Failed to update batch in MongoDB:', err);
+    }
   };
 
   const deleteBatch = async (id: string) => {
-    await dbDeleteBatch(id);
     setAllBatches((prev) => prev.filter((b) => b.id !== id));
     setTodayQueueIds((prev) => prev.filter((queueId) => queueId !== id));
     if (selectedBatch?.id === id) {
       setSelectedBatch(null);
+    }
+    dbDeleteBatch(id).catch(() => {});
+
+    // Delete in MongoDB
+    try {
+      await ApiService.deleteBatch(id);
+    } catch (err) {
+      console.error('Failed to delete batch in MongoDB:', err);
     }
   };
 
@@ -422,21 +431,28 @@ export function BatchProvider({ children }: { children: React.ReactNode }) {
       section: b.section || selectedSection,
     }));
 
+    let combined: Batch[] = [];
     if (replaceExisting) {
       const otherBatches = allBatches.filter((b) => (b.section || 'AIML-E') !== selectedSection);
-      const combined = [...otherBatches, ...taggedBatches];
-      await dbClearAllBatches();
-      await dbSaveBatchesBulk(combined);
-      setAllBatches(combined);
+      combined = [...otherBatches, ...taggedBatches];
     } else {
       const existingMap = new Map(allBatches.map((b) => [b.id, b]));
       taggedBatches.forEach((b) => {
         existingMap.set(b.id, b);
       });
-      const combined = Array.from(existingMap.values());
-      await dbSaveBatchesBulk(combined);
-      setAllBatches(combined);
+      combined = Array.from(existingMap.values());
     }
+
+    setAllBatches(combined);
+    dbSaveBatchesBulk(combined).catch(() => {});
+
+    // Save in MongoDB
+    try {
+      await ApiService.bulkImportBatches(taggedBatches, replaceExisting, selectedSection);
+    } catch (err) {
+      console.error('Failed to bulk import batches in MongoDB:', err);
+    }
+
     if (settings.soundEffects) AudioEffects.playSuccessChime();
   };
 
@@ -455,11 +471,11 @@ export function BatchProvider({ children }: { children: React.ReactNode }) {
       updatedDate: now,
     };
 
-    await dbSaveBatch(updatedBatch);
     setAllBatches((prev) => prev.map((b) => (b.id === id ? updatedBatch : b)));
     if (selectedBatch?.id === id) setSelectedBatch(updatedBatch);
+    dbSaveBatch(updatedBatch).catch(() => {});
 
-    // Save session log
+    // Create session log
     const presentCount = updatedBatch.members.filter((m) => m.present).length;
     const sessionLog: SessionLog = {
       id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
@@ -475,8 +491,19 @@ export function BatchProvider({ children }: { children: React.ReactNode }) {
       timestamp: now,
       trainerNotes: updatedBatch.trainerNotes,
     };
-    await dbSaveSessionLog(sessionLog);
+
     setAllSessionLogs((prev) => [sessionLog, ...prev]);
+    dbSaveSessionLog(sessionLog).catch(() => {});
+
+    // Save in MongoDB
+    try {
+      await Promise.all([
+        ApiService.updateBatch(updatedBatch),
+        ApiService.createSessionLog(sessionLog),
+      ]);
+    } catch (err) {
+      console.error('Failed to save status & log in MongoDB:', err);
+    }
 
     if (settings.soundEffects) {
       if (status === 'Presented') AudioEffects.playWinnerFanfare();
@@ -526,9 +553,9 @@ export function BatchProvider({ children }: { children: React.ReactNode }) {
       updatedDate: now,
     };
 
-    await dbSaveBatch(updatedBatch);
     setAllBatches((prev) => prev.map((b) => (b.id === id ? updatedBatch : b)));
     setSelectedBatch(updatedBatch);
+    dbSaveBatch(updatedBatch).catch(() => {});
 
     const presentCount = updatedMembers.filter((m) => m.present).length;
     const log: SessionLog = {
@@ -546,8 +573,18 @@ export function BatchProvider({ children }: { children: React.ReactNode }) {
       trainerNotes,
     };
 
-    await dbSaveSessionLog(log);
     setAllSessionLogs((prev) => [log, ...prev]);
+    dbSaveSessionLog(log).catch(() => {});
+
+    // Save in MongoDB
+    try {
+      await Promise.all([
+        ApiService.updateBatch(updatedBatch),
+        ApiService.createSessionLog(log),
+      ]);
+    } catch (err) {
+      console.error('Failed to save evaluation & log in MongoDB:', err);
+    }
 
     if (settings.soundEffects) AudioEffects.playWinnerFanfare();
   };
@@ -569,11 +606,18 @@ export function BatchProvider({ children }: { children: React.ReactNode }) {
       return b;
     });
 
-    await dbSaveBatchesBulk(updatedAll);
     setAllBatches(updatedAll);
     if (selectedBatch && (selectedBatch.section || 'AIML-E') === selectedSection) {
       const updated = updatedAll.find((b) => b.id === selectedBatch.id);
       setSelectedBatch(updated || null);
+    }
+    dbSaveBatchesBulk(updatedAll).catch(() => {});
+
+    // Reset in MongoDB
+    try {
+      await ApiService.resetAllStatuses(selectedSection);
+    } catch (err) {
+      console.error('Failed to reset statuses in MongoDB:', err);
     }
   };
 
@@ -596,26 +640,48 @@ export function BatchProvider({ children }: { children: React.ReactNode }) {
 
   const updateSettings = async (newSettings: Partial<AppSettings>) => {
     const merged = { ...settings, ...newSettings };
-    await dbSaveSettings(merged);
     setSettings(merged);
+    dbSaveSettings(merged).catch(() => {});
+
+    try {
+      await ApiService.updateSettings(merged);
+    } catch (err) {
+      console.error('Failed to update settings in MongoDB:', err);
+    }
   };
 
   const loadSampleData = async () => {
-    await dbClearAllBatches();
-    await dbSaveBatchesBulk(ALL_INITIAL_BATCHES);
     setAllBatches(ALL_INITIAL_BATCHES);
     setSelectedBatch(null);
+    dbClearAllBatches().then(() => dbSaveBatchesBulk(ALL_INITIAL_BATCHES)).catch(() => {});
+
+    try {
+      await ApiService.reseedDatabase();
+    } catch (err) {
+      console.error('Failed to reseed database in MongoDB:', err);
+    }
+
     if (settings.soundEffects) AudioEffects.playSuccessChime();
   };
 
   const clearAllData = async () => {
-    await dbClearAllBatches();
-    await dbClearAllSessionLogs();
     setAllBatches([]);
     setAllSessionLogs([]);
     setSelectedBatch(null);
     setTodayQueueIds([]);
     setTodayQueueIndex(0);
+
+    dbClearAllBatches().catch(() => {});
+    dbClearAllSessionLogs().catch(() => {});
+
+    try {
+      await Promise.all([
+        ApiService.clearAllBatches(),
+        ApiService.clearAllSessionLogs(),
+      ]);
+    } catch (err) {
+      console.error('Failed to clear data in MongoDB:', err);
+    }
   };
 
   const generateTodayQueue = async (config: {
@@ -639,34 +705,54 @@ export function BatchProvider({ children }: { children: React.ReactNode }) {
     const ids = selectedQueue.map((b) => b.id);
     const scheduleData = {
       id: `sched-${Date.now()}`,
+      section: selectedSection,
       generatedDate: new Date().toISOString(),
       batchIds: ids,
       currentIndex: 0,
     };
 
-    await dbSaveSchedule(scheduleData);
     setTodayQueueIds(ids);
     setTodayQueueIndex(0);
+    dbSaveSchedule(scheduleData).catch(() => {});
+
+    try {
+      await ApiService.saveSchedule(scheduleData);
+    } catch (err) {
+      console.error('Failed to save schedule in MongoDB:', err);
+    }
   };
 
   const advanceScheduleQueue = (direction: 'next' | 'prev') => {
+    let newIndex = todayQueueIndex;
     if (direction === 'next' && todayQueueIndex < todayQueueIds.length - 1) {
-      setTodayQueueIndex((prev) => prev + 1);
+      newIndex = todayQueueIndex + 1;
     } else if (direction === 'prev' && todayQueueIndex > 0) {
-      setTodayQueueIndex((prev) => prev - 1);
+      newIndex = todayQueueIndex - 1;
     }
+
+    setTodayQueueIndex(newIndex);
+    const scheduleData = {
+      section: selectedSection,
+      batchIds: todayQueueIds,
+      currentIndex: newIndex,
+    };
+    ApiService.saveSchedule(scheduleData).catch(() => {});
   };
 
   const reorderScheduleQueue = async (newQueue: Batch[]) => {
     const ids = newQueue.map((b) => b.id);
     setTodayQueueIds(ids);
     const scheduleData = {
-      id: `sched-${Date.now()}`,
-      generatedDate: new Date().toISOString(),
+      section: selectedSection,
       batchIds: ids,
       currentIndex: todayQueueIndex,
     };
-    await dbSaveSchedule(scheduleData);
+
+    try {
+      await ApiService.saveSchedule(scheduleData);
+    } catch (err) {
+      console.error('Failed to save schedule in MongoDB:', err);
+    }
   };
 
   return (
